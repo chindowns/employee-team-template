@@ -12,8 +12,45 @@ const render = require("./lib/htmlRenderer");
 
 
 // Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
 
+// and to create objects for each team member (using the correct classes as blueprints!)
+function addEmployee() {
+    inquirer.prompt(questions)
+        .then(answers => {
+            console.log(answers.role);
+
+            switch (answers.role) {
+                case 'Employee':
+                    var employee = new Employee(answers.name, answers.id, answers.email);
+
+                    console.log(employee);
+                    break;
+
+                case 'Manager':
+                    var manager = new Manager(answers.name, answers.id, answers.email, answers.officeNumber);
+
+                    console.log(manager);
+                    break;
+
+                case 'Engineer':
+                    var engineer = new Engineer(answers.name, answers.id, answers.email, answers.github);
+
+                    console.log(engineer);
+                    break;
+
+                case 'Intern':
+                    var intern = new Intern(answers.name, answers.id, answers.email, answers.school);
+
+                    console.log(intern);
+                    break;
+
+            }
+            if (answers.add) { another(); }
+        })
+}
+function another() {
+    addEmployee();
+}
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
 // generate and return a block of HTML including templated divs for each employee!
@@ -33,3 +70,59 @@ const render = require("./lib/htmlRenderer");
 // for further information. Be sure to test out each class and verify it generates an
 // object with the correct structure and methods. This structure will be crucial in order
 // for the provided `render` function to work! ```
+
+var questions = [
+    {
+        type: "input",
+        name: "name",
+        message: "Enter the employee's name: "
+    },
+    {
+        type: "input",
+        name: "id",
+        message: "Enter the employee's ID: "
+    },
+    {
+        type: "input",
+        name: "email",
+        message: "Enter the employee's email address: "
+    },
+    {
+        type: "checkbox",
+        name: "role",
+        message: "What is the employee's role?",
+        default: "Employee",
+        choices: [
+            "Employee",
+            "Manager",
+            "Engineer",
+            "Intern"
+        ]
+    },
+    {
+        when: (answers) => answers.role === "Manager",
+        type: "input",
+        name: "officeNumber",
+        message: "Enter the manager's office number: "
+    },
+    {
+        when: (answers) => answers.role === "Engineer",
+        type: "input",
+        name: "github",
+        message: "Enter the engineer's github user name: "
+    },
+    {
+        when: (answers) => answers.role === "Intern",
+        type: "input",
+        name: "school",
+        message: "Enter the Intern's school: "
+    },
+    {
+        type: 'confirm',
+        name: 'add',
+        message: 'Add another employee? (no)',
+        default: false
+    }
+];
+
+addEmployee();
