@@ -10,46 +10,49 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const htmlRender = require("./lib/htmlRenderer");
 
-
 // Write code to use inquirer to gather information about the development team members,
-
 // and to create objects for each team member (using the correct classes as blueprints!)
+
+
+var employeeInfo = [];
 function addEmployee() {
+
     inquirer.prompt(questions)
         .then(answers => {
-            let main = [];
-            console.log(answers);
-
+            
             switch (answers.role) {
                 case 'Manager':
                     let manager = new Manager(answers.name, answers.id, answers.email, answers.officeNumber);
-                    main.push(manager);
+                    employeeInfo.push(manager);
                     console.log(manager);
                     break;
 
                 case 'Engineer':
                     let engineer = new Engineer(answers.name, answers.id, answers.email, answers.github);
-                    main.push(engineer);
+                    employeeInfo.push(engineer);
                     console.log(engineer);
                     break;
 
                 case 'Intern':
                     let intern = new Intern(answers.name, answers.id, answers.email, answers.school);
-                    main.push(intern);
+                    employeeInfo.push(intern);
                     console.log(intern);
                     break;
-
             }
             
-            if (answers.add) { addEmployee(); }
-            else{let outputfile = htmlRender(main);
-            fs.writeFileSync('./output/team.html', outputfile, function(err, result){
+            if (answers.add) { 
+                //Passing false to New Output File
+                addEmployee(false);
+            }
+            else{outputfile = htmlRender(employeeInfo);
+            fs.writeFile('./output/team.html', outputfile, function(err, result){
                 if(err) throw err;
-                console.log("Look at your ./output/team.html file");
+                console.log(result);
             });
             }
 
         })
+    
 }
 
 // After the user has input all employees desired, call the `render` function (required
