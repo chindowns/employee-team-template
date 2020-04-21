@@ -8,7 +8,7 @@ const fs = require("fs");
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
-const render = require("./lib/htmlRenderer");
+const htmlRender = require("./lib/htmlRenderer");
 
 
 // Write code to use inquirer to gather information about the development team members,
@@ -17,40 +17,41 @@ const render = require("./lib/htmlRenderer");
 function addEmployee() {
     inquirer.prompt(questions)
         .then(answers => {
-            console.log(answers.role);
+            let main = [];
+            console.log(answers);
 
             switch (answers.role) {
-                case 'Employee':
-                    var employee = new Employee(answers.name, answers.id, answers.email);
-
-                    console.log(employee);
-                    break;
-
                 case 'Manager':
-                    var manager = new Manager(answers.name, answers.id, answers.email, answers.officeNumber);
-
+                    let manager = new Manager(answers.name, answers.id, answers.email, answers.officeNumber);
+                    main.push(manager);
                     console.log(manager);
                     break;
 
                 case 'Engineer':
-                    var engineer = new Engineer(answers.name, answers.id, answers.email, answers.github);
-
+                    let engineer = new Engineer(answers.name, answers.id, answers.email, answers.github);
+                    main.push(engineer);
                     console.log(engineer);
                     break;
 
                 case 'Intern':
-                    var intern = new Intern(answers.name, answers.id, answers.email, answers.school);
-
+                    let intern = new Intern(answers.name, answers.id, answers.email, answers.school);
+                    main.push(intern);
                     console.log(intern);
                     break;
 
             }
-            if (answers.add) { another(); }
+            
+            if (answers.add) { addEmployee(); }
+            else{let outputfile = htmlRender(main);
+            fs.writeFileSync('./output/team.html', outputfile, function(err, result){
+                if(err) throw err;
+                console.log("Look at your ./output/team.html file");
+            });
+            }
+
         })
 }
-function another() {
-    addEmployee();
-}
+
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
 // generate and return a block of HTML including templated divs for each employee!
@@ -88,12 +89,10 @@ var questions = [
         message: "Enter the employee's email address: "
     },
     {
-        type: "checkbox",
+        type: "list",
         name: "role",
         message: "What is the employee's role?",
-        default: "Employee",
         choices: [
-            "Employee",
             "Manager",
             "Engineer",
             "Intern"
